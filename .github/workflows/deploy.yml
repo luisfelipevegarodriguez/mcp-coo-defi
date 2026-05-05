@@ -1,0 +1,28 @@
+name: Deploy to Cloud Run
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Authenticate GCP
+        uses: google-github-actions/auth@v2
+        with:
+          credentials_json: ${{ secrets.GCP_SA_KEY }}
+
+      - name: Deploy to Cloud Run
+        uses: google-github-actions/deploy-cloudrun@v2
+        with:
+          service: mcp-coo-defi
+          region: europe-west1
+          source: .
+          env_vars: |
+            MCP_API_KEYS=${{ secrets.MCP_API_KEYS }}
+            X_BEARER_TOKEN=${{ secrets.X_BEARER_TOKEN }}
+            COINSTATS_API_KEY=${{ secrets.COINSTATS_API_KEY }}
+            COINSTATS_SHARE_TOKEN=${{ secrets.COINSTATS_SHARE_TOKEN }}
